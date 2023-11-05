@@ -12,6 +12,8 @@ import view.GiaoDien;
  * @author admin
  */
 public class Dijkstra {
+    private static ByteArrayOutputStream byteOutput;
+    private static  DataOutputStream output;
     
     private static final int MAX = 50;
     private static final int VOCUNG = 10000000;
@@ -125,6 +127,54 @@ public class Dijkstra {
         }
        
     }
+    public byte[] OutPutByte(){
+        int[] dataPath = new int[MAX];
+        int j = 0;
+        // ghi dữ liệu ra file output.txt
+        // sau đó server sẽ gửi dữ liệu đi
+        try{
+             byteOutput = new ByteArrayOutputStream();
+             output = new DataOutputStream(byteOutput);
+             output.writeBytes(""+ this.d[t]);
+             output.writeBytes("\n");
+             int i = this.truoc[t];
+             dataPath[j++] = t;
+             while(i != this.s){
+                 dataPath[j++] = i;
+                 i = truoc[i];
+             }
+             dataPath[j++] = s;
+             output.writeBytes(dataPath[j-1]+ " ");
+             for(int k = j -2;k >= 1; k--){
+                 output.writeBytes(dataPath[k] + " ");
+                 
+             }
+             
+             output.writeBytes(dataPath[0]+ "");
+             output.writeBytes("\n");
+             
+             for(int x = n; x>=1 ;x--){
+            if(x != s && x!= t){
+                GhiCacDinhConLai(x);
+            }
+            
+        }
+                         output.close();
+            byteOutput.close();
+            return byteOutput.toByteArray();
+
+             
+            
+             
+             
+        }catch(Exception e){
+            System.out.println("Loi ghi file "+ e.toString());
+            return null;
+            
+        }
+        
+       
+    }
 
     public void result() {
         System.out.println("Duong di ngan nhat tu " + (char)(s + 'A' - 1) + " den " + (char)(t + 'A' - 1) + " la");
@@ -233,9 +283,9 @@ public class Dijkstra {
         // ghi dữ liệu ra file output.txt
         // sau đó server sẽ gửi dữ liệu đi
         try{
-             String fileName = "D:\\Hoc ki 5\\Pbl4\\truyenfile\\server\\output.txt";
-             BufferedWriter bw = new BufferedWriter(new FileWriter(fileName, true));
-             bw.write(t+ ": ");
+            
+             
+             output.writeBytes(t+ ": ");
              int i = this.truoc[t];
              dataPath[j++] = t;
              while(i != this.s){
@@ -244,15 +294,17 @@ public class Dijkstra {
                  i = truoc[i];
              }
              dataPath[j++] = s;
-             bw.write(dataPath[j-1]+ " ");
+            
+             output.writeBytes(dataPath[j-1]+ " ");
              for(int k = j -2;k >= 1; k--){
-                 bw.write(dataPath[k] + " ");
+
+                 output.writeBytes(dataPath[k] + " ");
                  
              }
-             bw.write(dataPath[0]+ "");
-             bw.newLine();
+             output.writeBytes(dataPath[0]+ "");
+             output.writeBytes("\n");
              
-             bw.close();
+  
              
              
         }catch(Exception e){

@@ -3,6 +3,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package tcp;
+import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -35,10 +36,21 @@ public class Client {
 	    dos.write(fileBytes);  // Sau đó gửi nội dung file
            
             dos.flush();
+            System.out.println("Gui file thanh cong");
             //System.out.println(fis.readAllBytes().toString());
-            clientSocket.close();
             
+            // đọc dữ liệu gửi về từ server 
+            int fileSize;
+            DataInputStream input = new DataInputStream(clientSocket.getInputStream());
+            fileSize = input.readInt();
+            byte[] data= new byte[fileSize];
+            data = input.readNBytes(fileSize);
+            FileOutputStream fos = new FileOutputStream("D:\\Hoc ki 5\\Pbl4\\truyenfile\\client\\output.txt");
+            fos.write(data  , 0, fileSize);
+            fos.close();
             
+            System.out.println("\n Nhan ket qua thanh cong");
+            //clientSocket.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
