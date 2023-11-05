@@ -140,7 +140,18 @@ public class GiaoDien extends javax.swing.JFrame {
             String Path = br.readLine();
             txtDistance.setText(txtDistance.getText() + distance);
             txtPathToEnd.setText(txtPathToEnd.getText() + Path);
-            
+            String line;
+            StringBuilder fileContents = new StringBuilder();
+            while ((line = br.readLine()) != null) {
+                // Đọc từng dòng và nối nó vào chuỗi
+                fileContents.append(line);
+                fileContents.append("\n"); // Thêm ký tự xuống dòng sau mỗi dòng nếu cần
+
+                // Hoặc nếu bạn không muốn thêm ký tự xuống dòng:
+                // fileContents.append(line);
+            }
+            br.close();
+            txtPaths.setText(fileContents.toString());
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, e.toString());
             
@@ -306,6 +317,11 @@ public class GiaoDien extends javax.swing.JFrame {
 
         btnEndControl.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
         btnEndControl.setText("Kết thúc");
+        btnEndControl.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEndControlActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -481,6 +497,10 @@ public class GiaoDien extends javax.swing.JFrame {
         
         
     }//GEN-LAST:event_btnSelectionActionPerformed
+
+    private void btnEndControlActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEndControlActionPerformed
+            this.setVisible(false);        // TODO add your handling code here:
+    }//GEN-LAST:event_btnEndControlActionPerformed
 
     /**
      * @param args the command line arguments

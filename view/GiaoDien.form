@@ -393,6 +393,9 @@
             </Property>
             <Property name="text" type="java.lang.String" value="K&#x1ebf;t th&#xfa;c"/>
           </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnEndControlActionPerformed"/>
+          </Events>
         </Component>
       </SubComponents>
     </Container>

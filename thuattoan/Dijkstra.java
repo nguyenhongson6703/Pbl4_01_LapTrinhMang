@@ -26,28 +26,7 @@ public class Dijkstra {
     private boolean[] chuaxet = new boolean[MAX]; // xét đỉnh đã được xét hay chưa
     
 
-    public void init() throws FileNotFoundException {
-        Scanner scanner = new Scanner(new File("D:\\Hoc ki 5\\Pbl4\\server\\input\\DIJKSTRA.txt"));
-
-        n = scanner.nextInt();
-
-        System.out.println("So dinh: " + n);
-
-        
-        //Đọc ma trận trọng số 
-        for (int i = 1; i <= n; i++) {
-            for (int j = 1; j <= n; j++) {
-                Matrix[i][j] = scanner.nextInt();
-                if (Matrix[i][j] == 0) {
-                    Matrix[i][j] = VOCUNG;
-                }
-            }
-        }
-        s = scanner.nextInt();
-        t = scanner.nextInt();
-
-        scanner.close();
-    }
+    
     public void Input(){
         try {
             FileReader inputFile = new FileReader("D:\\Hoc ki 5\\Pbl4\\server\\input\\input.txt");
@@ -78,27 +57,71 @@ public class Dijkstra {
             System.out.println("Loi doc file "+ e.toString());
         }
     }
+    public void inputFromByteArray(byte[] data) {
+    try {
+        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(data);
+        BufferedReader br = new BufferedReader(new InputStreamReader(byteArrayInputStream));
+        
+        // Đọc số đỉnh
+        n = Integer.parseInt(br.readLine());
+        String line;
+        
+        for (int i = 1; i <= n; i++) {
+            line = br.readLine();
+            String[] values = line.split(" ");
+            for (int j = 1; j <= n; j++) {
+                Matrix[i][j] = Integer.parseInt(values[j - 1]);
+                if (Matrix[i][j] == 0) {
+                    Matrix[i][j] = VOCUNG;
+                }
+            }
+        }
+        
+        s = Integer.parseInt(br.readLine());
+        t = Integer.parseInt(br.readLine());
+        br.close();
+    } catch (Exception e) {
+        System.out.println("Lỗi đọc dữ liệu từ mảng byte: " + e.toString());
+    }
+    }
     public void OutPut(){
+        int[] dataPath = new int[MAX];
+        int j = 0;
         // ghi dữ liệu ra file output.txt
         // sau đó server sẽ gửi dữ liệu đi
         try{
-             FileWriter fileOutput = new FileWriter("D:\\Hoc ki 5\\Pbl4\\server\\output\\output.txt");
-             BufferedWriter bw = new BufferedWriter(fileOutput);
+             String filename = "D:\\Hoc ki 5\\Pbl4\\truyenfile\\server\\output.txt";
+             BufferedWriter bw = new BufferedWriter(new FileWriter(filename, false));
              bw.write(""+ this.d[t]);
              bw.newLine();
              int i = this.truoc[t];
-             bw.write(t+" ");
+             dataPath[j++] = t;
+             //bw.write(t+" ");
              while(i != this.s){
-                 bw.write(""+ i + " ");
+                 //bw.write(""+ i + " ");
+                 dataPath[j++] = i;
                  i = truoc[i];
              }
-             bw.write(s+" "); 
+             dataPath[j++] = s;
+             bw.write(dataPath[j-1]+ " ");
+             for(int k = j -2;k >= 1; k--){
+                 bw.write(dataPath[k] + " ");
+                 
+             }
+             bw.write(dataPath[0]+ "");
+             bw.newLine();
+             
              bw.close();
              
              
         }catch(Exception e){
             System.out.println("Loi ghi file "+ e.toString());
             
+        }
+        for(int i = n; i>=1 ;i--){
+            if(i != s && i!= t){
+                GhiCacDinhConLai(i);
+            }
         }
        
     }
@@ -156,14 +179,96 @@ public class Dijkstra {
             }
         }
     }
-//    public static void main(String[] args) throws FileNotFoundException {
-//        
-//        Dijkstra algorithm = new Dijkstra();
-//
-//        algorithm.Input();
-//        algorithm.dijkstra();
-//        algorithm.result();
-//        algorithm.OutPut();
+    public static void setArrayToZero(int[] array) {
+        for (int i = 0; i < array.length; i++) {
+            array[i] = 0;
+        }
+    }
+    public void GhiCacDinhConLai(int t){
+       
+        // reset lại các giá trị cần có bao gồm 
+        setArrayToZero(d);
+        setArrayToZero(truoc);
+        boolean[] chuaxet = new boolean[MAX];
+         // thực thi thuật toán dijitra
+        int u, minp;
+        
+        for (int v = 1; v <= n; v++) {
+            d[v] = Matrix[s][v];
+            truoc[v] = s;
+            chuaxet[v] = false;
+        }
+
+        truoc[s] = 0;
+        d[s] = 0;
+        chuaxet[s] = true;
+
+        while (!chuaxet[t]) {
+            minp = VOCUNG;
+            u = -1;  // Initialize u
+            // Tìm đỉnh u sao cho d[u] là ngắn nhất
+            for (int v = 1; v <= n; v++) {
+                if (!chuaxet[v] && minp > d[v]) {
+                    u = v;
+                    minp = d[v];
+                }
+            }
+            
+            if (u == -1) break;  // No path exists
+            
+            chuaxet[u] = true;
+            //so sanh d[u] + matrix[u][v] voi d[v]
+            if (!chuaxet[t]) {
+                for (int v = 1; v <= n; v++) {
+                    if (!chuaxet[v] && d[u] + Matrix[u][v] < d[v]) {
+                        d[v] = d[u] + Matrix[u][v];
+                        truoc[v] = u;
+                    }
+                }
+            }
+        }  
+         // ghi dữ liệu đỉnh nguồn tới tất cả các đỉnh còn lại vào file 
+        int[] dataPath = new int[MAX];
+        int j = 0;
+        // ghi dữ liệu ra file output.txt
+        // sau đó server sẽ gửi dữ liệu đi
+        try{
+             String fileName = "D:\\Hoc ki 5\\Pbl4\\truyenfile\\server\\output.txt";
+             BufferedWriter bw = new BufferedWriter(new FileWriter(fileName, true));
+             bw.write(t+ ": ");
+             int i = this.truoc[t];
+             dataPath[j++] = t;
+             while(i != this.s){
+                 
+                 dataPath[j++] = i;
+                 i = truoc[i];
+             }
+             dataPath[j++] = s;
+             bw.write(dataPath[j-1]+ " ");
+             for(int k = j -2;k >= 1; k--){
+                 bw.write(dataPath[k] + " ");
+                 
+             }
+             bw.write(dataPath[0]+ "");
+             bw.newLine();
+             
+             bw.close();
+             
+             
+        }catch(Exception e){
+            System.out.println("Loi ghi file "+ e.toString());
+            
+        }
+    }
+    public static void main(String[] args) throws FileNotFoundException {
+        
+        Dijkstra algorithm = new Dijkstra();
+
+        algorithm.Input();
+        algorithm.dijkstra();
+        algorithm.result();
+        algorithm.OutPut();
+    }
 //          //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
 //        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
 //         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
