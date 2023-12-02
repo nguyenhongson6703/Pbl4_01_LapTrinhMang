@@ -18,7 +18,8 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import javax.swing.JOptionPane;
 import serverclientnhanguifile.Client;
-import serverclientnhanguifile.Server;
+import java.util.Random;
+
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Random;
@@ -35,7 +36,7 @@ public class GiaoDien extends javax.swing.JFrame {
     private static final int  VOCUNG = 10000000;
     private Client client;
     myPanel dothi;
-    
+    private static final int MAX = 50;
 
     /**
      * Creates new form GiaoDien
@@ -56,7 +57,7 @@ public class GiaoDien extends javax.swing.JFrame {
             int [][] Matrix = d.init();
             int n = d.sodinh();
 
-
+            Random generator = new Random();
             public myPanel() {
                     points = new ArrayList<>();
                     int x,y;
@@ -66,8 +67,8 @@ public class GiaoDien extends javax.swing.JFrame {
                                     y= 75;
                             }else {
                                     x = 50 + i*30;
-                                    if ( i%2 == 0) y =120;
-                                    else y = 25;
+                                    if ( i%2 == 0) y =120 + generator.nextInt(10) + 1;
+                                    else y = 25 + generator.nextInt(10) + 1;
                             }
                             points.add(new Point(x,y));
                     }
@@ -125,6 +126,11 @@ public class GiaoDien extends javax.swing.JFrame {
                                             g2.setColor(Color.GREEN);
                                             g2.fillOval(p.x - 6, p.y - 6, 12, 12);
                                     }
+                                    else {
+                                          Point p = points.get(Integer.parseInt(value[i])-1);
+                                            g2.setColor(Color.ORANGE);
+                                            g2.fillOval(p.x - 6, p.y - 6, 12, 12);
+                                    }
                             }
                     }
 
@@ -151,13 +157,73 @@ public class GiaoDien extends javax.swing.JFrame {
                 // fileContents.append(line);
             }
             br.close();
+            fileIn.close();
             txtPaths.setText(fileContents.toString());
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, e.toString());
+            JOptionPane.showMessageDialog(this, "Lỗi hiển thị dữ liệu");
             
         }
         
         
+    }
+    public boolean KiemTraDuLieu(){
+        // số đỉnh ma trận
+        int n;
+        int[][] Matrix = new int[MAX][MAX];
+        // đỉnh bắt đầu
+        int s;
+        // đỉnh kết thúc
+        int t;
+        try {
+            FileReader inputFile = new FileReader("D:\\Hoc ki 5\\Pbl4\\client\\input\\DIJITRA.txt");
+            BufferedReader br = new BufferedReader(inputFile);
+            // đọc số đỉnh 
+            n = Integer.parseInt(br.readLine());
+            String line;
+            
+            for(int i = 1; i<= n;i++){
+                line = br.readLine();
+                String[] value = line.split(" ");
+                for(int j = 1 ;j <= n;j++){
+                    Matrix[i][j] = Integer.parseInt(value[j-1]);
+                    
+                }
+            }
+            s = Integer.parseInt(txtSource.getText());
+            t = Integer.parseInt(txtDestination.getText());
+            br.close();
+            inputFile.close();
+            // kiểm tra dữ liệu của ma trận 
+            //vuông, đối xứng, có đường chéo chính bằng 0 , các trọng số dương
+            for(int i = 1;i<=n;i++){
+                for(int j = 1;j<=n;j++){
+                    
+                    if(i == j){
+                        if(Matrix[i][i] != 0){
+                            JOptionPane.showMessageDialog(this, "Ma trận trọng số phải có đường chéo chính bằng 0");
+                            return false;
+                        }
+                    }else{
+                        if(Matrix[i][j] != Matrix[j][i]){
+                            JOptionPane.showMessageDialog(this, "Ma trận trọng số phải là ma trận đối xứng");
+                            return false;
+                        }
+                        if(Matrix[i][j] < 0){
+                            JOptionPane.showMessageDialog(this, "Các trọng số trong ma trận phải dương");
+                            return false;
+                        }
+                        
+                    }
+                }
+            }
+            if((s<1 || s>n)||(t<1||t>n)){
+                JOptionPane.showMessageDialog(this, "Các đỉnh và nguồn phải lớn hơn 0 và không vượt quá số đỉnh");
+                return false;
+            }
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
     public void GhiFile(int source , int destination){
         String sourceFile = "D:\\Hoc ki 5\\Pbl4\\client\\input\\DIJITRA.txt";
@@ -179,6 +245,8 @@ public class GiaoDien extends javax.swing.JFrame {
             writer.write(destination + "");
             reader.close();
             writer.close();
+            FileIn.close();
+            FileOut.close();
             JOptionPane.showMessageDialog(this, "Bạn đã lấy dữ liệu thành công");
             
              
@@ -480,26 +548,37 @@ public class GiaoDien extends javax.swing.JFrame {
 
     private void btnSelectionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSelectionActionPerformed
         // TODO add your handling code here:
-        
-        try {
-            int source = Integer.parseInt(txtSource.getText());
-            int destination = Integer.parseInt(txtDestination.getText());
-            GhiFile(source, destination);
-            client.RunClient();
-            HienThi();
-            dothi.repaint();
-            
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Bạn cần phải điền đầy đủ thông tin của nguồn và đích");
-            
+        if(KiemTraDuLieu()){
+                try {
+                int source = Integer.parseInt(txtSource.getText());
+                int destination = Integer.parseInt(txtDestination.getText());
+                GhiFile(source, destination);
+                client.RunClient();
+                HienThi();
+                dothi.repaint();
+
+            } catch (Exception e) {
+
+                JOptionPane.showMessageDialog(this, e.getMessage());
+
+            }
+        }else{
+                JOptionPane.showMessageDialog(this, "Hãy nhập đúng dữ liệu kiểu dữ liệu vào gồm đỉnh ma trận trọng số và nguồn , đích.Chú ý ma trận trọng số là ma trận dương");
         }
+        
         
         
         
     }//GEN-LAST:event_btnSelectionActionPerformed
 
     private void btnEndControlActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEndControlActionPerformed
-            this.setVisible(false);        // TODO add your handling code here:
+        try {
+            this.client.shutDownClient();
+            System.exit(0);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Không thể đóng client");
+        }
+        
     }//GEN-LAST:event_btnEndControlActionPerformed
 
     /**

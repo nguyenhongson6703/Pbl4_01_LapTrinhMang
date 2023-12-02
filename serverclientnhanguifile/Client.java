@@ -5,6 +5,8 @@
 package serverclientnhanguifile;
 
 import java.awt.JobAttributes;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -12,6 +14,9 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.Inet4Address;
 import java.net.InetAddress;
+import java.net.Socket;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Scanner;
 
 /**
@@ -21,57 +26,69 @@ import java.util.Scanner;
 // client sẽ nhập vào tên file rồi đọc file rồi ghi vào datapacker rồi send cho server
 // client chờ và nhận file từ server rồi view lên màn hình
 public class Client {
-    public static final int PORT = 9000;
-    public void RunClient() {
-     
+    public static final int PORT = 9999;
+    private Socket clientSocket;
+    private DataOutputStream dos;
+    private DataInputStream input;
+    private FileOutputStream fos;
+    public Client(){
         try {
-            // gừi file lên cho server
-            DatagramSocket socket = new DatagramSocket();
-            InetAddress serverAddress = InetAddress.getByName("localhost");
-            Scanner scn = new Scanner(System.in);
-            //System.out.println("Nhap vao ten file: ");
-            String nameFile = "input.txt";
-           //nameFile = scn.nextLine();
-            String source = "D:\\Hoc ki 5\\Pbl4\\client\\input\\";
-            nameFile = source + nameFile;
-            File fileIn = new File(nameFile);
-            FileInputStream fis = new FileInputStream(fileIn);
-            int lengFile = (int)fileIn.length();
-            byte [] outputByte = new byte[lengFile];
-            fis.read(outputByte);
-            DatagramPacket packetOut = new DatagramPacket(outputByte, outputByte.length, serverAddress, PORT);
-            socket.send(packetOut);
-            
-            // Nhận lại file từ server 
-            String outputFile = "D:\\Hoc ki 5\\Pbl4\\client\\output\\output.txt";
-            File fileOut = new File(outputFile);
-            FileOutputStream fos = new FileOutputStream(fileOut);
-            byte []inputByte = new byte[60000];
-            DatagramPacket packetIn = new DatagramPacket(inputByte, inputByte.length);
-            socket.receive(packetIn);
-            fos.write(packetIn.getData(), 0, packetIn.getLength());
-            System.out.println("Luu du lieu thanh cong");
-            
-          // đóng các luồng lại 
-          fos.close();
-          fis.close();
-          
-            
-            
-            
+            this.clientSocket = new Socket("localhost", PORT);
         } catch (Exception e) {
-            System.out.println("Loi clien "+ e.toString());
-            
         }
+    }
+    
+    public void RunClient() throws Exception{
+     
+        
+
+            //this.clientSocket = new Socket("localhost", PORT);
+            // mở luồng ghi dữ liệu
+            this.dos = new DataOutputStream(clientSocket.getOutputStream());
+            // mở file đê đọc dữ liệu
+            String path = "D:\\Hoc ki 5\\Pbl4\\client\\input\\input.txt";
+            File file = new File(path);
+           
+            byte[] fileBytes = Files.readAllBytes(Paths.get(path));
+                    
+            this.dos.writeInt(fileBytes.length);
+	    this.dos.write(fileBytes);  // Sau đó gửi nội dung file
+           
+            this.dos.flush();
+            System.out.println("Gui file thanh cong");
+            
+            // đọc dữ liệu gửi về từ server 
+            int fileSize;
+            this.input = new DataInputStream(clientSocket.getInputStream());
+            fileSize = this.input.readInt();
+            if(fileSize == 0){
+                System.out.println("Server thực hiện thất bại");
+                this.input.close();
+                this.dos.close();
+                throw new Exception("Lỗi thực hiện xử lí server");
+            }else{
+                byte[] data= new byte[fileSize];
+                data = this.input.readNBytes(fileSize);
+                this.fos = new FileOutputStream("D:\\Hoc ki 5\\Pbl4\\client\\output\\output.txt");
+                this.fos.write(data  , 0, fileSize);
+                this.fos.close();
+            }
+            
+            
        
         
         
         
     
     }
-    public static void main(String[] args) {
-        Client client = new Client();
-        client.RunClient();
+    public void shutDownClient()throws Exception{
+        this.dos = new DataOutputStream(clientSocket.getOutputStream());
+        this.dos.writeInt(0);
+        this.dos.close();
+        this.input.close();
+        this.fos.close();
+        this.clientSocket.close();
     }
+    
     
 }

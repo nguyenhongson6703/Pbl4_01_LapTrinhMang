@@ -25,9 +25,10 @@ public class Server {
             ServerSocket serverSocket = new ServerSocket(port);
             while(true){
                 Socket clientSocket = serverSocket.accept();
-                ProcessHandle luong = new ProcessHandle(clientSocket);
-                luong.start();
-                //clientSocket.close();
+                 System.out.println("Chap nhan ket noi");
+                 Thread thServer = new Thread (new handleProcess(clientSocket));
+                 thServer.start();
+
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -35,6 +36,60 @@ public class Server {
         }
 
         
+        
+    }
+    private static class handleProcess implements Runnable{
+        private Socket clientSocket;
+    	byte[] result;
+        public handleProcess(Socket client){
+            this.clientSocket = client;
+        }
+        @Override
+        public void run() {
+            try {
+                    DataInputStream dis = new DataInputStream(clientSocket.getInputStream());
+                    DataOutputStream dos = new DataOutputStream(clientSocket.getOutputStream());
+                    while(true){
+                        int fileSize = dis.readInt();
+                        
+                        if(fileSize > 0){
+                            byte[] data = new byte[fileSize];
+                            data = dis.readNBytes(fileSize);
+                            try {
+                                Dijkstra algorithm = new Dijkstra();
+                                algorithm.inputFromByteArray(data);
+                                algorithm.dijkstra();
+                                algorithm.result();
+                                result = algorithm.OutPutByte();
+                                System.out.println("Xu li du lieu thanh cong");
+
+
+                                dos.writeInt(result.length);
+                                dos.write(result);
+                                dos.flush();
+                                System.out.println("Gui file thanh cong");
+                            } catch (Exception e) {
+                                System.out.println("Xu li du lieu that bai");
+                                dos.writeInt(0);
+                                dos.flush();
+                            }
+                            
+                        }else{
+                            dis.close();
+                            dos.close();
+                            this.clientSocket.close();
+                            break;
+                            
+                        }
+                        
+                    }
+                    
+	            
+	          
+                }catch (Exception ex) {
+                    ex.printStackTrace();
+		}
+        }
         
     }
  
