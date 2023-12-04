@@ -16,15 +16,15 @@ public class Dijkstra {
     private static  DataOutputStream output;
     
     private static final int MAX = 50;
-    private static final int VOCUNG = 10000000;
+    private static final float VOCUNG = 10000000;
 
     private int n; // số đỉnh ma trận 
     private int s; // đỉnh bắt đầu
     private int t; // đỉnh kết thúc
 
     private int[] truoc = new int[MAX]; // lưu các đỉnh trước của đường đi
-    private  int[] d = new int[MAX]; // lưu khoảng cách
-    private int[][] Matrix = new int[MAX][MAX]; // lưu ma trận trọng số
+    private  float[] d = new float[MAX]; // lưu khoảng cách
+    private float[][] Matrix = new float[MAX][MAX]; // lưu ma trận trọng số
     private boolean[] chuaxet = new boolean[MAX]; // xét đỉnh đã được xét hay chưa
     
 
@@ -41,7 +41,7 @@ public class Dijkstra {
                 line = br.readLine();
                 String[] value = line.split(" ");
                 for(int j = 1 ;j <= n;j++){
-                    Matrix[i][j] = Integer.parseInt(value[j-1]);
+                    Matrix[i][j] = Float.parseFloat(value[j-1]);
                     if(Matrix[i][j] == 0){
                         Matrix[i][j] = VOCUNG;
                         
@@ -66,13 +66,14 @@ public class Dijkstra {
         
         // Đọc số đỉnh
         n = Integer.parseInt(br.readLine());
+        System.out.println("n co gia tri:"+ n);
         String line;
         
         for (int i = 1; i <= n; i++) {
             line = br.readLine();
             String[] values = line.split(" ");
             for (int j = 1; j <= n; j++) {
-                Matrix[i][j] = Integer.parseInt(values[j - 1]);
+                Matrix[i][j] =  Float.parseFloat(values[j - 1]);
                 if (Matrix[i][j] == 0) {
                     Matrix[i][j] = VOCUNG;
                 }
@@ -92,7 +93,7 @@ public class Dijkstra {
         // ghi dữ liệu ra file output.txt
         // sau đó server sẽ gửi dữ liệu đi
         try{
-             String filename = "D:\\Hoc ki 5\\Pbl4\\truyenfile\\server\\output.txt";
+             String filename = "D:\\Hoc ki 5\\Pbl4\\server\\output\\output.txt";
              BufferedWriter bw = new BufferedWriter(new FileWriter(filename, false));
              bw.write(""+ this.d[t]);
              bw.newLine();
@@ -192,7 +193,8 @@ public class Dijkstra {
     }
 
     public void dijkstra() {
-        int u, minp;
+        int u;
+        float minp;
         
         for (int v = 1; v <= n; v++) {
             d[v] = Matrix[s][v];
@@ -229,7 +231,12 @@ public class Dijkstra {
             }
         }
     }
-    public static void setArrayToZero(int[] array) {
+    public static void setArrayToZero(float[] array) {
+        for (int i = 0; i < array.length; i++) {
+            array[i] = 0;
+        }
+    }
+    public static void setArrayToZeroInt(int[] array){
         for (int i = 0; i < array.length; i++) {
             array[i] = 0;
         }
@@ -238,10 +245,11 @@ public class Dijkstra {
        
         // reset lại các giá trị cần có bao gồm 
         setArrayToZero(d);
-        setArrayToZero(truoc);
+        setArrayToZeroInt(truoc);
         boolean[] chuaxet = new boolean[MAX];
          // thực thi thuật toán dijitra
-        int u, minp;
+        int u;
+        float minp;
         
         for (int v = 1; v <= n; v++) {
             d[v] = Matrix[s][v];
@@ -319,6 +327,7 @@ public class Dijkstra {
         algorithm.Input();
         algorithm.dijkstra();
         algorithm.result();
+        
         algorithm.OutPut();
     }
 //          //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">

@@ -4,16 +4,25 @@
  */
 package view;
 
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author admin
  */
 public class InputMatrix extends javax.swing.JFrame {
+    private int n;
+    private float[][] matrix;
+    int row;
+    int col;
+    private GiaoDien giaodien;
 
     /**
      * Creates new form InputMatrix
      */
-    public InputMatrix() {
+    public InputMatrix(GiaoDien parent) {
+        this.giaodien = parent;
+  
         initComponents();
     }
 
@@ -26,6 +35,20 @@ public class InputMatrix extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jScrollPane1 = new javax.swing.JScrollPane();
+        txtMatrix = new javax.swing.JTextArea();
+        jLabel1 = new javax.swing.JLabel();
+        txtNMatrix = new javax.swing.JTextField();
+        btnNMatrix = new javax.swing.JButton();
+        btnAddCom = new javax.swing.JButton();
+        btnReset = new javax.swing.JButton();
+        btnCreateMatrix = new javax.swing.JButton();
+        jLabel2 = new javax.swing.JLabel();
+        txtIndex = new javax.swing.JTextField();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
+        txtMatrixItemValue = new javax.swing.JTextField();
+        btnEnd = new javax.swing.JButton();
         menuBar = new javax.swing.JMenuBar();
         fileMenu = new javax.swing.JMenu();
         openMenuItem = new javax.swing.JMenuItem();
@@ -42,6 +65,53 @@ public class InputMatrix extends javax.swing.JFrame {
         aboutMenuItem = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+
+        txtMatrix.setColumns(20);
+        txtMatrix.setRows(5);
+        jScrollPane1.setViewportView(txtMatrix);
+
+        jLabel1.setText("Nhập vào cấp ma trận");
+
+        btnNMatrix.setText("Tạo");
+        btnNMatrix.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnNMatrixActionPerformed(evt);
+            }
+        });
+
+        btnAddCom.setText("Thêm phần tử");
+        btnAddCom.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAddComActionPerformed(evt);
+            }
+        });
+
+        btnReset.setText("Reset");
+        btnReset.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnResetActionPerformed(evt);
+            }
+        });
+
+        btnCreateMatrix.setText("Tạo ma trận");
+        btnCreateMatrix.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCreateMatrixActionPerformed(evt);
+            }
+        });
+
+        jLabel2.setText("Thêm vào phần tử ");
+
+        jLabel3.setText("Ma trận trọng số");
+
+        jLabel4.setText("Giá trị");
+
+        btnEnd.setText("Kết thúc");
+        btnEnd.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEndActionPerformed(evt);
+            }
+        });
 
         fileMenu.setMnemonic('f');
         fileMenu.setText("File");
@@ -110,11 +180,68 @@ public class InputMatrix extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(61, 61, 61)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(txtIndex, javax.swing.GroupLayout.DEFAULT_SIZE, 209, Short.MAX_VALUE)
+                            .addComponent(txtMatrixItemValue))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnAddCom)
+                        .addGap(126, 126, 126))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(btnCreateMatrix)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(btnReset)
+                        .addGap(18, 18, 18)
+                        .addComponent(btnEnd)
+                        .addGap(42, 42, 42))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 134, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(txtNMatrix, javax.swing.GroupLayout.PREFERRED_SIZE, 265, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(btnNMatrix))
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 543, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addContainerGap(89, Short.MAX_VALUE))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 279, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtNMatrix, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnNMatrix))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 28, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtIndex, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(txtMatrixItemValue, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(btnAddCom, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel4)))
+                .addGap(18, 18, 18)
+                .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 187, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnReset, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnCreateMatrix, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnEnd, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(25, 25, 25))
         );
 
         pack();
@@ -124,43 +251,130 @@ public class InputMatrix extends javax.swing.JFrame {
         System.exit(0);
     }//GEN-LAST:event_exitMenuItemActionPerformed
 
+    private void btnNMatrixActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNMatrixActionPerformed
+        try {
+            
+            this.n = Integer.parseInt(txtNMatrix.getText());    
+            this.row = 0;
+            this.col = 0;
+            SetUp();
+            txtIndex.setText("Hàng "+ (col+1) + " Cột "+(col+1));
+            txtMatrix.setText("");
+            
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Nhập đúng cấp ma trận");
+        }
+       
+        
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnNMatrixActionPerformed
+
+    private void btnAddComActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddComActionPerformed
+      
+        if(this.n>0 ){
+            try {
+                if(row >= n || col >= n){
+                    JOptionPane.showMessageDialog(this,"Đã nhập xong ma trận");
+                    
+                }else{
+                    float item = Float.parseFloat(txtMatrixItemValue.getText().trim());  
+                    if(item >= 0){
+                      this.matrix[row][col] = item;
+                      if(col < n-1){
+                          txtMatrix.setText(txtMatrix.getText() +"   "+matrix[row][col] );
+                      }else{
+                          txtMatrix.setText(txtMatrix.getText() + "   "+ matrix[row][col]+"\n");
+                      }
+                      
+                     
+                      col++;
+                      if(col == n){
+                          row++;
+                          col = 0;
+                      }
+                      if(row<n && col < n){
+                         
+                              txtIndex.setText("Hàng "+ (row+1) + " Cột "+(col+1));  
+                      }
+                      txtMatrixItemValue.setText("");
+                    }else{
+                        JOptionPane.showMessageDialog(this,"Hãy nhập đúng kiểu dữ liệu là số thực dương");
+                    }
+                }
+                 
+               
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this,e.getMessage());
+            }
+           
+            
+        }else{
+            JOptionPane.showMessageDialog(this, "Bạn cần nhập cấp của ma trận");
+        }
+        
+    }//GEN-LAST:event_btnAddComActionPerformed
+    private boolean kiemTraMaTran(){
+        for(int i = 0;i<n;i++){
+                for(int j = 0;j<n;j++){
+                    
+                    if(i == j){
+                        if(matrix[i][i] != 0){
+                            JOptionPane.showMessageDialog(this, "Ma trận trọng số phải có đường chéo chính bằng 0");
+                            return false;
+                        }
+                    }else{
+                        if(matrix[i][j] != matrix[j][i]){
+                            JOptionPane.showMessageDialog(this, "Ma trận trọng số phải là ma trận đối xứng");
+                            return false;
+                        }
+                        if(matrix[i][j] < 0){
+                            JOptionPane.showMessageDialog(this, "Các trọng số trong ma trận phải dương");
+                            return false;
+                        }
+                        
+                    }
+                }
+            }
+        return true;
+    }
+    private void btnCreateMatrixActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCreateMatrixActionPerformed
+       if(kiemTraMaTran()){
+           JOptionPane.showMessageDialog(this, "Ma trận trọng số hợp lệ");
+           this.giaodien.matrixhh(matrix, n);
+       }else{
+           JOptionPane.showMessageDialog(this, "Ma trận trọng số không hợp lệ");
+       }
+    }//GEN-LAST:event_btnCreateMatrixActionPerformed
+
+    private void btnEndActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEndActionPerformed
+      
+        this.setVisible(false);// TODO add your handling code here:
+    }//GEN-LAST:event_btnEndActionPerformed
+
+    private void btnResetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnResetActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnResetActionPerformed
+
     /**
      * @param args the command line arguments
      */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(InputMatrix.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(InputMatrix.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(InputMatrix.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(InputMatrix.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new InputMatrix().setVisible(true);
-            }
-        });
+   
+    private  void SetUp(){
+        matrix = new float[50][50];
+       for(int i = 0;i<50;i++){
+           for(int j = 0;j<50;j++){
+               matrix[i][j] = -1;
+           }
+       }
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem aboutMenuItem;
+    private javax.swing.JButton btnAddCom;
+    private javax.swing.JButton btnCreateMatrix;
+    private javax.swing.JButton btnEnd;
+    private javax.swing.JButton btnNMatrix;
+    private javax.swing.JButton btnReset;
     private javax.swing.JMenuItem contentsMenuItem;
     private javax.swing.JMenuItem copyMenuItem;
     private javax.swing.JMenuItem cutMenuItem;
@@ -169,11 +383,20 @@ public class InputMatrix extends javax.swing.JFrame {
     private javax.swing.JMenuItem exitMenuItem;
     private javax.swing.JMenu fileMenu;
     private javax.swing.JMenu helpMenu;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JMenuBar menuBar;
     private javax.swing.JMenuItem openMenuItem;
     private javax.swing.JMenuItem pasteMenuItem;
     private javax.swing.JMenuItem saveAsMenuItem;
     private javax.swing.JMenuItem saveMenuItem;
+    private javax.swing.JTextField txtIndex;
+    private javax.swing.JTextArea txtMatrix;
+    private javax.swing.JTextField txtMatrixItemValue;
+    private javax.swing.JTextField txtNMatrix;
     // End of variables declaration//GEN-END:variables
 
 }

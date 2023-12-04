@@ -16,6 +16,7 @@ import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.IOException;
 import javax.swing.JOptionPane;
 import serverclientnhanguifile.Client;
 import java.util.Random;
@@ -23,6 +24,7 @@ import java.util.Random;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Random;
+import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 import thuattoan.ClientModule;
 
@@ -33,10 +35,12 @@ import thuattoan.ClientModule;
  * @author admin
  */
 public class GiaoDien extends javax.swing.JFrame {
-    private static final int  VOCUNG = 10000000;
+    private static final float  VOCUNG = 10000000;
     private Client client;
     myPanel dothi;
     private static final int MAX = 50;
+    static boolean check = false;
+    public String inputPath = "";
 
     /**
      * Creates new form GiaoDien
@@ -48,15 +52,22 @@ public class GiaoDien extends javax.swing.JFrame {
         pnlPaint.setPreferredSize(new Dimension(347, 182));
         dothi = new myPanel();
         pnlPaint.add(dothi,BorderLayout.CENTER);
-        client = new Client();
+       
+    }
+    public  void ConnectServer(String ipAddress, int port){
+        try {
+             client = new Client(ipAddress, port);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this,"Kết nối đã thất bại hãy kiểm tra lại địa chỉ và cổng của server");
+        }
     }
     private class myPanel extends JPanel {
 
         ArrayList<Point> points;
             ClientModule d = new ClientModule();
-            int [][] Matrix = d.init();
+            float [][] Matrix = d.init(inputPath);
             int n = d.sodinh();
-
+            
             Random generator = new Random();
             public myPanel() {
                     points = new ArrayList<>();
@@ -67,8 +78,8 @@ public class GiaoDien extends javax.swing.JFrame {
                                     y= 75;
                             }else {
                                     x = 50 + i*30;
-                                    if ( i%2 == 0) y =120 + generator.nextInt(10) + 1;
-                                    else y = 25 + generator.nextInt(10) + 1;
+                                    if ( i%2 == 0) y =120 + generator.nextInt(25) + 1;
+                                    else y = 25 + generator.nextInt(25) + 1;
                             }
                             points.add(new Point(x,y));
                     }
@@ -79,23 +90,23 @@ public class GiaoDien extends javax.swing.JFrame {
                     String [] value = d.xu_li_duong_di();
                     int s = d.nguon();
                     int t = d.dich();
-
+                    
                     super.paintComponent(g);
                     Graphics2D g2 = (Graphics2D)g;
                     float lineWidth = 2.0f;
                     g2.setStroke(new BasicStroke(lineWidth));
 
                     for (int i = 0; i < points.size()-1; i++) {
-                            g2.setColor(Color.YELLOW);
-                            Point p = points.get(i);
-                            g2.fillOval(p.x - 6, p.y - 6, 12, 12);
-                            if (i%2==1) {
-                                    g2.setColor(Color.BLACK);  // Đặt màu chữ
-                                    g2.drawString(Integer.toString(i+1), p.x - 3, p.y - 10);
-                            }else if (i%2==0) {
-                                    g2.setColor(Color.BLACK);  // Đặt màu chữ
-                                    g2.drawString(Integer.toString(i+1), p.x - 3, p.y + 20);
-                            }
+                        g2.setColor(Color.YELLOW);
+                        Point p = points.get(i);
+                        g2.fillOval(p.x - 6, p.y - 6, 12, 12);
+                        if (i%2==1) {
+                                g2.setColor(Color.BLACK);  // Đặt màu chữ
+                                g2.drawString(Integer.toString(i+1), p.x - 3, p.y - 10);
+                        }else if (i%2==0) {
+                                g2.setColor(Color.BLACK);  // Đặt màu chữ
+                                g2.drawString(Integer.toString(i+1), p.x - 3, p.y + 20);
+                        }
                     }
                     g2.setColor(Color.RED);
                     for (int i=1; i<=n; i++) {
@@ -107,8 +118,9 @@ public class GiaoDien extends javax.swing.JFrame {
                                     }
                             }
                     }
-
-                    if (value != null) {
+                    
+                    if(check==true){
+                        if (value != null) {
                             for (int i=0; i< value.length - 1 ; i++) {
                                     Point p = points.get(Integer.parseInt(value[i])-1);
                                     for (int j=0; j< points.size();j++) {
@@ -128,12 +140,12 @@ public class GiaoDien extends javax.swing.JFrame {
                                     }
                                     else {
                                           Point p = points.get(Integer.parseInt(value[i])-1);
-                                            g2.setColor(Color.ORANGE);
+                                            g2.setColor(Color.BLUE);
                                             g2.fillOval(p.x - 6, p.y - 6, 12, 12);
                                     }
                             }
+                        }
                     }
-
 	}
     }
     public void HienThi() {
@@ -166,16 +178,53 @@ public class GiaoDien extends javax.swing.JFrame {
         
         
     }
-    public boolean KiemTraDuLieu(){
+    public void matrixhh(float[][] matrix, int n){
+        System.out.println("Matrix : ");
+        for(int i = 0;i<n;i++){
+            for(int j = 0;j<n;j++){
+                System.out.println(matrix[i][j]);
+            }
+        }
+        String fileName;
+        
+        if(inputPath.trim().length()>0){
+            fileName = inputPath;
+        }else{
+            fileName = "D:\\Hoc ki 5\\Pbl4\\client\\input\\DIJITRA.txt";
+        }
+        
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName))) {
+            writer.write(n+"");
+            writer.newLine();
+            for (int i = 0; i < n; i++) {
+                for (int j = 0; j < n; j++) {
+                    writer.write(matrix[i][j] + " ");
+
+                    
+                }
+                writer.newLine(); // Xuống dòng sau mỗi hàng
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        
+    }
+    public boolean KiemTraDuLieu(){ 
         // số đỉnh ma trận
         int n;
-        int[][] Matrix = new int[MAX][MAX];
+        float[][] Matrix = new float[MAX][MAX];
         // đỉnh bắt đầu
         int s;
         // đỉnh kết thúc
         int t;
         try {
-            FileReader inputFile = new FileReader("D:\\Hoc ki 5\\Pbl4\\client\\input\\DIJITRA.txt");
+            String inputFileName;
+            if(inputPath.trim().length()> 0){
+                inputFileName = inputPath;
+            }else{
+                inputFileName = "D:\\Hoc ki 5\\Pbl4\\client\\input\\DIJITRA.txt";
+            }
+            FileReader inputFile = new FileReader(inputFileName);
             BufferedReader br = new BufferedReader(inputFile);
             // đọc số đỉnh 
             n = Integer.parseInt(br.readLine());
@@ -185,7 +234,7 @@ public class GiaoDien extends javax.swing.JFrame {
                 line = br.readLine();
                 String[] value = line.split(" ");
                 for(int j = 1 ;j <= n;j++){
-                    Matrix[i][j] = Integer.parseInt(value[j-1]);
+                    Matrix[i][j] = Float.parseFloat(value[j-1]);
                     
                 }
             }
@@ -226,7 +275,13 @@ public class GiaoDien extends javax.swing.JFrame {
         }
     }
     public void GhiFile(int source , int destination){
-        String sourceFile = "D:\\Hoc ki 5\\Pbl4\\client\\input\\DIJITRA.txt";
+        String sourceFile;
+        if(inputPath.trim().length()>0){
+            sourceFile = inputPath;
+        }else{
+            sourceFile = "D:\\Hoc ki 5\\Pbl4\\client\\input\\DIJITRA.txt";
+        }
+      
         String desFile = "D:\\Hoc ki 5\\Pbl4\\client\\input\\input.txt";
         try {
             FileReader FileIn = new FileReader(sourceFile);
@@ -282,6 +337,11 @@ public class GiaoDien extends javax.swing.JFrame {
         jLabel3 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         txtPaths = new javax.swing.JTextArea();
+        btnHandInput = new javax.swing.JButton();
+        jLabel4 = new javax.swing.JLabel();
+        btnChooseFile = new javax.swing.JButton();
+        jPanel2 = new javax.swing.JPanel();
+        btnConnect = new javax.swing.JButton();
         menuBar = new javax.swing.JMenuBar();
         fileMenu = new javax.swing.JMenu();
         openMenuItem = new javax.swing.JMenuItem();
@@ -342,7 +402,7 @@ public class GiaoDien extends javax.swing.JFrame {
                     .addComponent(txtDestination, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(32, Short.MAX_VALUE))
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(51, 51, 51)
+                .addGap(69, 69, 69)
                 .addComponent(btnSelection, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -357,9 +417,9 @@ public class GiaoDien extends javax.swing.JFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(txtSource, javax.swing.GroupLayout.DEFAULT_SIZE, 38, Short.MAX_VALUE)
                     .addComponent(txtDestination))
-                .addGap(18, 18, 18)
-                .addComponent(btnSelection, javax.swing.GroupLayout.DEFAULT_SIZE, 37, Short.MAX_VALUE)
-                .addContainerGap())
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(btnSelection, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(5, 5, 5))
         );
 
         pnlPaint.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 153), 2));
@@ -368,11 +428,11 @@ public class GiaoDien extends javax.swing.JFrame {
         pnlPaint.setLayout(pnlPaintLayout);
         pnlPaintLayout.setHorizontalGroup(
             pnlPaintLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 343, Short.MAX_VALUE)
+            .addGap(0, 0, Short.MAX_VALUE)
         );
         pnlPaintLayout.setVerticalGroup(
             pnlPaintLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 178, Short.MAX_VALUE)
+            .addGap(0, 0, Short.MAX_VALUE)
         );
 
         txtPathToEnd.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
@@ -396,16 +456,16 @@ public class GiaoDien extends javax.swing.JFrame {
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
-                .addGap(41, 41, 41)
+                .addGap(68, 68, 68)
                 .addComponent(btnEndControl, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(53, Short.MAX_VALUE))
+                .addContainerGap(99, Short.MAX_VALUE))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
-                .addContainerGap(36, Short.MAX_VALUE)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addContainerGap()
                 .addComponent(btnEndControl, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(26, 26, 26))
+                .addContainerGap(49, Short.MAX_VALUE))
         );
 
         jLabel3.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
@@ -417,6 +477,49 @@ public class GiaoDien extends javax.swing.JFrame {
         txtPaths.setLineWrap(true);
         txtPaths.setRows(5);
         jScrollPane1.setViewportView(txtPaths);
+
+        btnHandInput.setText("Nhập tay");
+        btnHandInput.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnHandInputActionPerformed(evt);
+            }
+        });
+
+        jLabel4.setText("Nhập dữ liệu");
+
+        btnChooseFile.setText("Chọn File");
+        btnChooseFile.setActionCommand("");
+        btnChooseFile.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnChooseFileActionPerformed(evt);
+            }
+        });
+
+        jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder("Kết nối"));
+
+        btnConnect.setText("Kết nối");
+        btnConnect.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnConnectActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGap(44, 44, 44)
+                .addComponent(btnConnect, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(btnConnect, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
+        );
 
         menuBar.setBackground(java.awt.Color.white);
 
@@ -489,54 +592,72 @@ public class GiaoDien extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
                         .addContainerGap()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(40, 40, 40)
-                        .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 117, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 116, Short.MAX_VALUE)
-                        .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(80, 80, 80))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(btnHandInput, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(btnChooseFile)))
+                        .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
-                                .addGap(40, 40, 40)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(txtDistance, javax.swing.GroupLayout.DEFAULT_SIZE, 313, Short.MAX_VALUE)
-                                    .addComponent(txtPathToEnd, javax.swing.GroupLayout.Alignment.TRAILING)))
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(18, 18, 18)
-                                .addComponent(pnlPaint, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addGap(44, 44, 44)
+                                        .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 117, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addContainerGap()
+                                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addContainerGap()
+                                        .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addGap(0, 0, Short.MAX_VALUE))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addGap(0, 0, Short.MAX_VALUE)
+                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 289, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(120, 120, 120)
+                        .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtDistance, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 535, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtPathToEnd, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(pnlPaint, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(46, 46, 46))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(22, 22, 22)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(btnHandInput, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btnChooseFile, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(13, 13, 13)
                         .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(32, 32, 32)
-                        .addComponent(jLabel3)
-                        .addGap(0, 28, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel3))
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(pnlPaint, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(26, 26, 26)
+                        .addComponent(pnlPaint, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(txtPathToEnd, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                    .addGroup(layout.createSequentialGroup()
                         .addComponent(txtDistance, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 169, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(24, 24, 24))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 169, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(29, 29, 29))
         );
 
         pack();
@@ -555,6 +676,7 @@ public class GiaoDien extends javax.swing.JFrame {
                 GhiFile(source, destination);
                 client.RunClient();
                 HienThi();
+                check = true;
                 dothi.repaint();
 
             } catch (Exception e) {
@@ -580,6 +702,28 @@ public class GiaoDien extends javax.swing.JFrame {
         }
         
     }//GEN-LAST:event_btnEndControlActionPerformed
+
+    private void btnHandInputActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnHandInputActionPerformed
+            InputMatrix inputmt = new InputMatrix(this);
+            inputmt.setVisible(true);// TODO add your handling code here:
+    }//GEN-LAST:event_btnHandInputActionPerformed
+
+    private void btnChooseFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnChooseFileActionPerformed
+             JFileChooser filechooser = new JFileChooser();
+             filechooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+             int result = filechooser.showOpenDialog(this);
+            if(result == JFileChooser.APPROVE_OPTION){
+             String path = filechooser.getSelectedFile().getAbsolutePath();
+             this.inputPath = path;
+            
+        }
+                    // TODO add your handling code here:
+    }//GEN-LAST:event_btnChooseFileActionPerformed
+
+    private void btnConnectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConnectActionPerformed
+            ConnectionView connectionView = new ConnectionView(this);
+            connectionView.setVisible(true);// TODO add your handling code here:
+    }//GEN-LAST:event_btnConnectActionPerformed
 
     /**
      * @param args the command line arguments
@@ -618,7 +762,10 @@ public class GiaoDien extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem aboutMenuItem;
+    private javax.swing.JButton btnChooseFile;
+    private javax.swing.JButton btnConnect;
     private javax.swing.JButton btnEndControl;
+    private javax.swing.JButton btnHandInput;
     private javax.swing.JButton btnSelection;
     private javax.swing.JMenuItem contentsMenuItem;
     private javax.swing.JMenuItem copyMenuItem;
@@ -631,7 +778,9 @@ public class GiaoDien extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JMenuBar menuBar;

@@ -12,17 +12,23 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 public class ClientModule {
     private static final int MAX = 50;
-    private static final int VOCUNG = 10000000;
+    private static final float VOCUNG = 10000000;
     
     private int s; // Start vertex.
     private int t; // End vertex.
 	private int n;  // so dinh
-	private int[][] Matrix = new int[MAX][MAX]; // ma tran trong so
+	private float [][] Matrix = new float[MAX][MAX]; // ma tran trong so
 	
 	//dua vao ma tran trong so de noi cac dinh 
-	public int[][] init(){
+	public float[][] init(String path){
             try {
-                FileReader inputFile = new FileReader("D:\\Hoc ki 5\\Pbl4\\client\\input\\DIJITRA.txt");
+                FileReader inputFile;
+                if(path.trim().length() > 0){
+                    inputFile = new FileReader(path);
+                }else{
+                    inputFile = new FileReader("D:\\Hoc ki 5\\Pbl4\\client\\input\\DIJITRA.txt");
+                }
+                 
                 BufferedReader br = new BufferedReader(inputFile);
                 // đọc số đỉnh 
                 n = Integer.parseInt(br.readLine());
@@ -32,7 +38,7 @@ public class ClientModule {
                     line = br.readLine();
                     String[] value = line.split(" ");
                     for(int j = 1;j <= n; j++){
-                        Matrix[i][j] = Integer.parseInt(value[j-1]);
+                        Matrix[i][j] = Float.parseFloat(value[j-1]);
                         if(Matrix[i][j] == 0){
                             Matrix[i][j] = VOCUNG;  
                         }                
@@ -52,7 +58,7 @@ public class ClientModule {
 		try {
                     FileReader inputFile = new FileReader("D:\\Hoc ki 5\\Pbl4\\client\\output\\output.txt");
                     BufferedReader br = new BufferedReader(inputFile);
-                    int kc = Integer.parseInt(br.readLine());
+                    float kc =Float.parseFloat(br.readLine());
                     String line;
                     line = br.readLine();
                     value = line.split(" ");

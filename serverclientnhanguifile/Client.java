@@ -31,9 +31,10 @@ public class Client {
     private DataOutputStream dos;
     private DataInputStream input;
     private FileOutputStream fos;
-    public Client(){
+    
+    public Client(String ip , int port){
         try {
-            this.clientSocket = new Socket("localhost", PORT);
+            this.clientSocket = new Socket(ip, port);
         } catch (Exception e) {
         }
     }
@@ -81,6 +82,7 @@ public class Client {
         
     
     }
+   
     public void shutDownClient()throws Exception{
         this.dos = new DataOutputStream(clientSocket.getOutputStream());
         this.dos.writeInt(0);
@@ -89,6 +91,7 @@ public class Client {
         this.fos.close();
         this.clientSocket.close();
     }
+   
     
     
 }
